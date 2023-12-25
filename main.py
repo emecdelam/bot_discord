@@ -1,0 +1,38 @@
+from os import getenv
+from discord import Client,app_commands,Intents,Interaction
+from logging_system.coloring import Colors
+from logging_system.log_level import Level
+from logging_system import logger
+from commands import ping as ping__
+
+
+class MyClient(Client):
+    def __init__(self,*,intents: Intents):
+        super().__init__(intents = intents)
+        self.tree = app_commands.CommandTree(self)
+
+    async def setup_hook(self):
+        for guild in self.guilds:
+            self.tree.copy_global_to(guild = guild)
+            await self.tree.sync(guild = guild)
+
+
+intents = Intents.default()
+intents.message_content = True
+intents.members = True
+intents.presences = True
+intents.reactions = True
+client = MyClient(intents = intents)
+
+
+@client.event
+async def on_ready():
+    await logger.log(f"Attempting a connection",Level.INFO,Colors.lightblue)
+    print("""██████╗░░█████╗░░█████╗░████████╗██╗███╗░░██╗░██████╗░░░░░░░░░░░░\n██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝██║████╗░██║██╔════╝░░░░░░░░░░░░\n██████╦╝██║░░██║██║░░██║░░░██║░░░██║██╔██╗██║██║░░██╗░░░░░░░░░░░░\n██╔══██╗██║░░██║██║░░██║░░░██║░░░██║██║╚████║██║░░╚██╗░░░░░░░░░░░\n██████╦╝╚█████╔╝╚█████╔╝░░░██║░░░██║██║░╚███║╚██████╔╝░░██╗██╗██╗\n╚═════╝░░╚════╝░░╚════╝░░░░╚═╝░░░╚═╝╚═╝░░╚══╝░╚═════╝░░░╚═╝╚═╝╚═╝""")
+    await client.setup_hook()
+    await logger.log(f"Logged in as {client.user}",Level.INFO,Colors.lightgreen)
+@client.tree.command()
+async def ping(interaction:Interaction):
+    """Gives you the response time"""
+    await ping__.ping(interaction)
+client.run(getenv('DISCORD_BOT_TOKEN'))
