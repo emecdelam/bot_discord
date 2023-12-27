@@ -1,9 +1,9 @@
 from os import getenv
-from discord import Client,app_commands,Intents,Interaction
-from logging_system.coloring import Colors
-from logging_system.log_level import Level
-from logging_system import logger
-from commands import ping as ping__
+
+from discord import Client,app_commands,Intents,Interaction, User
+
+from commands import ping__, summon__
+from logging_system import Colors,Level,log__
 
 
 class MyClient(Client):
@@ -27,12 +27,25 @@ client = MyClient(intents = intents)
 
 @client.event
 async def on_ready():
-    await logger.log(f"Attempting a connection",Level.INFO,Colors.lightblue)
-    print("""██████╗░░█████╗░░█████╗░████████╗██╗███╗░░██╗░██████╗░░░░░░░░░░░░\n██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝██║████╗░██║██╔════╝░░░░░░░░░░░░\n██████╦╝██║░░██║██║░░██║░░░██║░░░██║██╔██╗██║██║░░██╗░░░░░░░░░░░░\n██╔══██╗██║░░██║██║░░██║░░░██║░░░██║██║╚████║██║░░╚██╗░░░░░░░░░░░\n██████╦╝╚█████╔╝╚█████╔╝░░░██║░░░██║██║░╚███║╚██████╔╝░░██╗██╗██╗\n╚═════╝░░╚════╝░░╚════╝░░░░╚═╝░░░╚═╝╚═╝░░╚══╝░╚═════╝░░░╚═╝╚═╝╚═╝""")
+    await log__(f"Attempting a connection",Level.INFO,Colors.lightblue)
+    print(
+        """██████╗░░█████╗░░█████╗░████████╗██╗███╗░░██╗░██████╗░░░░░░░░░░░░\n██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝██║████╗░██║██╔════╝░░░░░░░░░░░░\n██████╦╝██║░░██║██║░░██║░░░██║░░░██║██╔██╗██║██║░░██╗░░░░░░░░░░░░\n██╔══██╗██║░░██║██║░░██║░░░██║░░░██║██║╚████║██║░░╚██╗░░░░░░░░░░░\n██████╦╝╚█████╔╝╚█████╔╝░░░██║░░░██║██║░╚███║╚██████╔╝░░██╗██╗██╗\n╚═════╝░░╚════╝░░╚════╝░░░░╚═╝░░░╚═╝╚═╝░░╚══╝░╚═════╝░░░╚═╝╚═╝╚═╝""")
     await client.setup_hook()
-    await logger.log(f"Logged in as {client.user}",Level.INFO,Colors.lightgreen)
+    await log__(f"Logged in as {client.user}",Level.INFO,Colors.lightgreen)
+
+
 @client.tree.command()
-async def ping(interaction:Interaction):
+async def ping(interaction: Interaction):
     """Gives you the response time"""
-    await ping__.ping(interaction)
+    await ping__(interaction)
+
+@client.tree.command()
+@app_commands.describe(
+    user="the user to summon"
+)
+async def summon(interaction: Interaction, user: User):
+    """Summons a person"""
+    await summon__(interaction,user)
+
+# Main loop starts here
 client.run(getenv('DISCORD_BOT_TOKEN'))
