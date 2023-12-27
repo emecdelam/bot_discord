@@ -1,8 +1,8 @@
 from os import getenv
 
-from discord import Client,app_commands,Intents,Interaction, User
+from discord import Client,app_commands,Intents,Interaction,User
 
-from commands import ping__, summon__
+from commands import ping__,summon__
 from logging_system import Colors,Level,log__
 
 
@@ -39,13 +39,15 @@ async def ping(interaction: Interaction):
     """Gives you the response time"""
     await ping__(interaction)
 
+
 @client.tree.command()
 @app_commands.describe(
-    user="the user to summon"
+    user = "the user to summon"
 )
-async def summon(interaction: Interaction, user: User):
+async def summon(interaction: Interaction,user: User):
     """Summons a person"""
     await summon__(interaction,user)
+
 
 # Main loop starts here
 client.run(getenv('DISCORD_BOT_TOKEN'))
