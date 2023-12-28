@@ -1,8 +1,9 @@
 from os import getenv
+from typing import Optional
 
 from discord import Client,app_commands,Intents,Interaction,User
 
-from commands import ping__,summon__
+from commands import ping__,summon__, search__
 from logging_system import Colors,Level,log__
 
 
@@ -47,7 +48,14 @@ async def ping(interaction: Interaction):
 async def summon(interaction: Interaction,user: User):
     """Summons a person"""
     await summon__(interaction,user)
-
+@client.tree.command()
+@app_commands.describe(
+    content = "the query to search",
+    num_results='the number of different results'
+)
+async def search(interaction: Interaction,content:str,num_results:Optional[int]=3):
+    """Returns you the searches for a result"""
+    await search__(interaction,content,num_results-1)
 
 # Main loop starts here
 client.run(getenv('DISCORD_BOT_TOKEN'))
