@@ -54,7 +54,7 @@ async def summon(interaction: Interaction,user: User):
     num_results='the number of different results'
 )
 async def search(interaction: Interaction,content:str,num_results:Optional[int]=3):
-    """Returns you the searches for a result"""
+    """Returns you the searches for a result, can't be less than 1"""
     await search__(interaction,content,num_results-1)
 
 # Main loop starts here

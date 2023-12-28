@@ -58,6 +58,8 @@ async def search(interaction: Interaction,query: str,num_results: Optional[int] 
 
     buttons: Buttons = Buttons(list(results),sent,embed)
     buttons.previous_button.disabled = True
+    if len(results) < 2:
+        buttons.next_button.disabled =True
     await sent.edit(
         embed = Embed(color = Color.blurple(),title = results[0]["title"],description = results[0]["desc"]).add_field(
             name = "Link",value = results[0]["url"]),view = buttons)
