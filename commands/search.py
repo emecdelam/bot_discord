@@ -1,4 +1,4 @@
-from typing import Optional,Dict,List
+from typing import Optional,Dict,List,Union
 from googlesearch import search as gsearch
 from discord import Interaction,Embed,Color,ButtonStyle,ui,Message
 from discord.ui import Button,View,button
@@ -63,7 +63,7 @@ async def search(interaction: Interaction,query: str,num_results: Optional[int] 
             name = "Link",value = results[0]["url"]),view = buttons)
 
 
-def google_search(query: str,num_results: int) -> str | List[Dict[str,str]]:
+def google_search(query: str,num_results: int) -> Union[str,List[Dict[str,str]]]:
     if num_results < 1:
         num_results = 1
     try:
