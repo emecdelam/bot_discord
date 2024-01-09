@@ -1,10 +1,9 @@
 from os import getenv
-from typing import Optional
-
 from discord import Client,app_commands,Intents
 from feature import BotFeature
 from commands import Ping,Summon,Search
 from logging_system import log__,Colors,Level
+from ex_reminder import Add,Done
 
 
 class MyClient(Client):
@@ -25,7 +24,7 @@ intents.presences = True
 intents.reactions = True
 client = MyClient(intents = intents)
 
-features: list[BotFeature] = [Ping(client),Summon(client),Search]
+features: list[BotFeature] = [Ping(client),Summon(client),Search(client),Add(client),Done(client)]
 
 @client.event
 async def on_ready():
@@ -39,8 +38,6 @@ async def on_ready():
 @client.event
 async def on_message(message):
     [await x.on_message_event(message) for x in features]
-
-
 
 
 # Main loop starts here
