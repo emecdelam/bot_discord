@@ -1,8 +1,19 @@
 from typing import Optional,Dict,List,Union
 from googlesearch import search as gsearch
-from discord import Interaction,Embed,Color,ButtonStyle,ui,Message
-from discord.ui import Button,View,button
-
+from discord import Interaction,Embed,Color,ButtonStyle,ui,Message, app_commands
+from discord.ui import Button,View
+from feature import BotFeature
+class Search(BotFeature):
+    def __init__(self, client):
+        super().__init__(client)
+        @client.tree.command()
+        @app_commands.describe(
+            content = "the query to search",
+            num_results = 'the number of different results'
+        )
+        async def search(interaction: Interaction,content: str,num_results: Optional[int] = 3):
+            """Returns you the searches for a result, can't be less than 1"""
+            await search__(interaction,content,num_results - 1)
 
 class Buttons(View):
     def __init__(self,content: List[Dict[str,str]],original: Message,embed: Embed,*,timeout: int = None):
@@ -43,7 +54,7 @@ class Buttons(View):
         await interaction.response.edit_message(view = self)
 
 
-async def search(interaction: Interaction,query: str,num_results: Optional[int] = 5) -> None:
+async def search__(interaction: Interaction,query: str,num_results: Optional[int] = 5) -> None:
     embed: Embed = Embed(
         color = Color.blurple(),
         title = '**Searching**',

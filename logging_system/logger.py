@@ -3,7 +3,6 @@ from .log_level import Level
 from datetime import datetime
 from typing import Optional
 
-
 async def log(message_content: str,level: str,text_color: Optional[Colors] = "") -> None:
     if level == Level.CRITICAL:
         text_color += Colors.black + Colors.bg.orange

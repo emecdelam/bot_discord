@@ -1,10 +1,10 @@
 from os import getenv
 from typing import Optional
 
-from discord import Client,app_commands,Intents,Interaction,User
-
-from commands import ping__,summon__, search__
-from logging_system import Colors,Level,log__
+from discord import Client,app_commands,Intents
+from feature import BotFeature
+from commands import Ping,Summon,Search
+from logging_system import log__,Colors,Level
 
 
 class MyClient(Client):
@@ -25,6 +25,7 @@ intents.presences = True
 intents.reactions = True
 client = MyClient(intents = intents)
 
+features: list[BotFeature] = [Ping(client),Summon(client),Search]
 
 @client.event
 async def on_ready():
@@ -32,30 +33,15 @@ async def on_ready():
     print(
         """██████╗░░█████╗░░█████╗░████████╗██╗███╗░░██╗░██████╗░░░░░░░░░░░░\n██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝██║████╗░██║██╔════╝░░░░░░░░░░░░\n██████╦╝██║░░██║██║░░██║░░░██║░░░██║██╔██╗██║██║░░██╗░░░░░░░░░░░░\n██╔══██╗██║░░██║██║░░██║░░░██║░░░██║██║╚████║██║░░╚██╗░░░░░░░░░░░\n██████╦╝╚█████╔╝╚█████╔╝░░░██║░░░██║██║░╚███║╚██████╔╝░░██╗██╗██╗\n╚═════╝░░╚════╝░░╚════╝░░░░╚═╝░░░╚═╝╚═╝░░╚══╝░╚═════╝░░░╚═╝╚═╝╚═╝""")
     await client.setup_hook()
+    await log__(f"Initializing classes",Level.INFO,Colors.lightblue)
+    [await x.on_ready() for x in features]
     await log__(f"Logged in as {client.user}",Level.INFO,Colors.lightgreen)
+@client.event
+async def on_message(message):
+    [await x.on_message_event(message) for x in features]
 
 
-@client.tree.command()
-async def ping(interaction: Interaction):
-    """Gives you the response time"""
-    await ping__(interaction)
 
-
-@client.tree.command()
-@app_commands.describe(
-    user = "the user to summon"
-)
-async def summon(interaction: Interaction,user: User):
-    """Summons a person"""
-    await summon__(interaction,user)
-@client.tree.command()
-@app_commands.describe(
-    content = "the query to search",
-    num_results='the number of different results'
-)
-async def search(interaction: Interaction,content:str,num_results:Optional[int]=3):
-    """Returns you the searches for a result, can't be less than 1"""
-    await search__(interaction,content,num_results-1)
 
 # Main loop starts here
 client.run(getenv('DISCORD_BOT_TOKEN'))
