@@ -1,3 +1,5 @@
+import asyncio
+import logging
 from os import getenv
 from discord import Intents,RawReactionActionEvent
 from feature import BotFeature
@@ -5,6 +7,12 @@ from commands import Ping,Summon,Search,Streak
 from logging_system import log__,Colors,Level
 from ex_reminder import Add,Done
 from client import MyClient
+from admin import command_handler
+
+logger = logging.getLogger()
+logger.setLevel(logging.ERROR)
+file_handler = logging.FileHandler('error.log')
+logger.addHandler(file_handler)
 
 intents = Intents.default()
 intents.message_content = True
@@ -24,6 +32,9 @@ async def on_ready():
     await log__(f"Initializing classes",Level.INFO,Colors.lightblue)
     [await x.on_ready() for x in features]
     await log__(f"Logged in as {client.user}",Level.INFO,Colors.lightgreen)
+    await asyncio.gather(client.setup_hook(),command_handler(client))
+
+
 @client.event
 async def on_message(message):
     [await x.on_message_event(message) for x in features]
@@ -35,5 +46,9 @@ async def on_raw_reaction_add(payload: RawReactionActionEvent):
 async def on_raw_reaction_remove(payload: RawReactionActionEvent):
     [await x.on_raw_reaction_remove(payload) for x in features]
 
-# Main loop starts here
-client.run(getenv('DISCORD_BOT_TOKEN'))
+
+
+file_handler = logging.FileHandler('error.log')
+file_handler.setLevel(logging.ERROR)
+
+client.run(getenv('DISCORD_BOT_TOKEN'), log_handler=file_handler)

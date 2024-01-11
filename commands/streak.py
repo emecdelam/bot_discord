@@ -1,7 +1,7 @@
 from typing import Dict
 import asyncpg
 from discord.ext import tasks
-from discord import Interaction,TextChannel,RawReactionActionEvent,Message,Member
+from discord import Interaction,TextChannel,RawReactionActionEvent,Message,Member,Embed,Color,app_commands
 from feature import BotFeature
 from datetime import time
 from datetime import timezone
@@ -17,7 +17,8 @@ class Streak(BotFeature):
         self.daily_message.add_exception_type(asyncpg.PostgresConnectionError)
         self.channel = None
         self.messages: Dict[Message.id,Dict[Member.id,bool]] = {}
-
+        self.debts = {}
+        self.paid = {}
         @client.tree.command()
         async def start_streaks(interaction: Interaction):
             """Reset task loop for current streak"""
@@ -56,7 +57,7 @@ class Streak(BotFeature):
             await interaction.response.send_message("missing persmission",ephemeral = True)
         @client.tree.command()
         async def streaks(interaction: Interaction, member:Member):
-            """Stops the task loop for current streaks"""
+            """Show the user number of streaks"""
             self.messages = pickle.load(open("db\\messages.p","rb"))
             count = 0
             for message in self.messages.keys():
@@ -66,8 +67,65 @@ class Streak(BotFeature):
                     count+=1
                 if not self.messages[message][member.id]:
                     count = 0
-            await interaction.response.send_message(f"Your current streak is : <a:flame2:1194658671892893716>   ||{count}||   <a:flame2:1194658671892893716>")
+            await interaction.response.send_message(f"Your current streak is : \n# <a:flame2:1194658671892893716>   {count}   <a:flame2:1194658671892893716>")
+        @client.tree.command()
+        async def leaderboard(interaction: Interaction):
+            """Show the podium for most number of streaks"""
+            self.messages = pickle.load(open("db\\messages.p","rb"))
+            score = {}
+            for message in self.messages.keys():
+                for user in self.messages[message].keys():
+                    if self.messages[message][user]:
+                        if user in score:
+                            score[user] += 1
+                        else:
+                            score[user] = 1
+                    else:
+                        score[user] = 0
+            score = dict(sorted(score.items(), key=lambda item: item[1], reverse=True))
+            desc = ""
+            for user, streak in score.items():
+                desc += f"<@{user}> : {streak} <a:flame2:1194658671892893716>\n\n"
+            embed: Embed = Embed(
+                color = Color.blurple(),
+                title = '**Leaderboard**',
+                description = desc
+            )
+            await interaction.response.send_message(embed=embed)
 
+        @client.tree.command()
+        @app_commands.describe(
+            amount="how much was paid"
+        )
+        async def pay(interaction: Interaction,amount:int):
+            """Show the podium for most number of streaks"""
+            self.paid[interaction.user.id] = amount
+            raise ValueError("This is a simulated error.")
+            return
+            if interaction.user.id in self.debts:
+                if amount==None:
+                    self.debts[interaction.user.id] = 0
+                if amount > self.debts[interaction.user.id]:
+                    await interaction.response.send_message("wait you are paying more than the debpts, I can t accept that",ephemeral = True)
+                elif amount <= self.debts[interaction.user.id]:
+                    self.debts[interaction.user.id] -= amount
+
+    async def count_debts(self):
+        self.messages = pickle.load(open("db\\messages.p","rb"))
+        debts = {}
+        for message in self.messages.keys():
+            for user in self.messages[message].keys():
+                if not self.messages[message][user]:
+                    if user in debts:
+                        debts[user] += 5
+                    else:
+                        debts[user] = 5
+        for user in self.paid.keys():
+            if user in debts:
+                debts[user] -= self.paid[user]
+                if debts[user] < 0:
+                    await log__("Negative debpt",Level.CRITICAL)
+        pickle.dump(self.messages,open("db\\messages.p","wb"))
     async def on_ready(self):
         self.channel = self.client.get_channel(1120432504629895300)
     async def is_admin(self,interaction: Interaction) -> bool:
