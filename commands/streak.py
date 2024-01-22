@@ -117,6 +117,12 @@ I want you to be creative. Speak like you would speak to teenagers. Be teaser !
 Put some smileys and life !
 Ideas of names: dumbasses, little boys, my cute engineers, young little bitches, my lolies
 And finish the message with a joke about engineers / maths or science !    
+Hello, it's time to have fun work, have you already done everything there was to do today?
+If you hadn't any exercise, have understood the lecture?
+If you hadn't any lecture, have you advanced in your group projects?
+If you can't advance in your group project you migth consider doing summaries
+If the summaries are already done you can do the exercises in advance or seeing the next chapter, going to a lecture with basic knowledge over the topic makes the lecture morerelevant
+If you can't advance any further, yo might consider preparing for the exam by redoing some exercises and reviewing important theory concept
                               """, 120)
         
         message:Message = await self.channel.send(content)
