@@ -9,6 +9,7 @@ from datetime import datetime
 import pickle
 from client import MyClient
 from logging_system import log__,Level
+from providers.mistral import ask_mistral
 
 class Streak(BotFeature):
     times = [time(hour = 0,minute = 0,tzinfo = timezone.utc)]
@@ -105,14 +106,20 @@ class Streak(BotFeature):
     async def daily_message(self) -> None:
         if (datetime.now().weekday() > 4):
             return
-        message:Message = await self.channel.send(
-            "Hello, it's time to ~~have fun~~ work, have you already done everything there was to do today?\nIf you had"
-            "n't any exercise, have understood the lecture?\nIf you hadn't any lecture, have you advanced in your group"
-            " projects?\nIf you can't advance in your group project you migth consider doing summaries\nIf the "
-            "summaries are already done you can do the exercises in advance "
-            "or seeing the next chapter, going to a lecture with basic knowledge over the topic makes the lecture more"
-            "relevant\nIf you can't advance any further, yo might consider preparing for the exam by redoing some "
-            "exercises and reviewing important theory concepts")
+
+        content = ask_mistral("""
+Generate ONLY ONE daily message asking users (there is not ony one user) if they did their daily work.
+Don't hesitate to call them with familiar nouns like "hey dumbass" (not this one but it's an example).
+Your answer must not be larger than 100 tokens. Be short !! (don't give me tokens number)
+
+You can insult them or be agressive.
+I want you to be creative. Speak like you would speak to teenagers. Be teaser !
+Put some smileys and life !
+Ideas of names: dumbasses, little boys, my cute engineers, young little bitches, my lolies
+And finish the message with a joke about engineers / maths or science !    
+                              """, 120)
+        
+        message:Message = await self.channel.send(content)
         self.messages[message.id] = {}
         for member in self.channel.guild.members:
             if not member.bot:

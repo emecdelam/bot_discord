@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 import asyncio
 import logging
 from os import getenv
@@ -9,6 +10,7 @@ from ex_reminder import Add,Done
 from client import MyClient
 from admin import command_handler
 
+load_dotenv()
 logger = logging.getLogger()
 logger.setLevel(logging.ERROR)
 file_handler = logging.FileHandler('error.log')
