@@ -9,7 +9,7 @@ from datetime import datetime
 import pickle
 from client import MyClient
 from logging_system import log__,Level
-from providers.mistral import ask_mistral
+from providers.openai import ask_chat
 
 class Streak(BotFeature):
     times = [time(hour = 0,minute = 0,tzinfo = timezone.utc)]
@@ -107,23 +107,16 @@ class Streak(BotFeature):
         if (datetime.now().weekday() > 4):
             return
 
-        content = ask_mistral("""
-Generate ONLY ONE daily message asking users (there is not only one user) if they did their daily work.
-Don't hesitate to call them with familiar nouns like "hey dumbass" (not this one but it's an example).
-Your answer must not be larger than 100 tokens. Be short !! (don't give me tokens number)
+        content = ask_chat("""I want you to generate a daily message for my users to ask them if they did their tasks (called TP) and i want you to end the message with science/math fun fact/joke.
 
-You can insult them or be agressive.
-I want you to be creative. Speak like you would speak to teenagers. Be teaser !
-Put some smileys and life !
-Ideas of names: dumbasses, little boys, my cute engineers, young little bitches, my lolies
-And finish the message with a joke about engineers / maths or science !    
-Hello, it's time to have fun work, have you already done everything there was to do today?
-If you hadn't any exercise, have understood the lecture?
-If you hadn't any lecture, have you advanced in your group projects?
-If you can't advance in your group project you migth consider doing summaries
-If the summaries are already done you can do the exercises in advance or seeing the next chapter, going to a lecture with basic knowledge over the topic makes the lecture morerelevant
-If you can't advance any further, yo might consider preparing for the exam by redoing some exercises and reviewing important theory concept
-                              """, 120)
+Speak to them using some emotes (not too much) and using a familiar vocabulary. just do your best and be creative ! It will give us motivation
+Address to us using little insultant names to touch our ego ! (we are engineers)
+The message is a discord message and have to be short. Go strait to the point. 
+Please. Don't be nice to us. Threaten us to fail ! Call us with bad names.
+Remind them they will have to pay if they don't finish. You can also talk about the leaderboard (optionnal)
+Don't be kind. Be aggressive, insultant. We fucked your mother. Call us weak, little, nobrainer, whatever you want !
+
+Your message must be the shortest possible""")
         
         message:Message = await self.channel.send(content)
         self.messages[message.id] = {}

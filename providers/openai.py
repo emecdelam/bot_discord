@@ -1,15 +1,14 @@
 import requests
 import os
-def ask_mistral(prompt, max_tokens, temperature=1):
+def ask_chat(prompt, temperature=1):
     headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer ' + os.getenv("MISTRAL_API_KEY"),
+        'Authorization': 'Bearer ' + os.getenv("OPENAI_API_KEY"),
     }
     json_data = {
-        'model': 'mistral-small',
-        'max_tokens': max_tokens,
-        'temperature': 1,
+        'model': 'gpt-3.5-turbo',
+        'temperature': temperature,
         'messages': [{
                 'role': 'user',
                 'content': prompt
@@ -17,9 +16,9 @@ def ask_mistral(prompt, max_tokens, temperature=1):
         ],
     }
 
-    r = requests.post("https://api.mistral.ai/v1/chat/completions", headers=headers, json=json_data)
+    r = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=json_data)
     if (r.status_code != 200):
-        return "⛔ Error from Mistral API: \n"+r.text
+        return "⛔ Error from OpenAI API: \n"+r.text
     text = r.json()["choices"][0]["message"]["content"]
     return text
 
