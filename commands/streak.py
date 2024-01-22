@@ -5,6 +5,7 @@ from discord import Interaction,TextChannel,RawReactionActionEvent,Message,Membe
 from feature import BotFeature
 from datetime import time
 from datetime import timezone
+from datetime import datetime
 import pickle
 from client import MyClient
 from logging_system import log__,Level
@@ -23,6 +24,7 @@ class Streak(BotFeature):
         async def start_streaks(interaction: Interaction):
             """Reset task loop for current streak"""
             if await self.is_admin(interaction):
+                self.channel = interaction.channel
                 await interaction.response.send_message("started streaks",ephemeral = True)
                 await self.daily_message.start()
                 return
@@ -93,47 +95,16 @@ class Streak(BotFeature):
             )
             await interaction.response.send_message(embed=embed)
 
-        @client.tree.command()
-        @app_commands.describe(
-            amount="how much was paid"
-        )
-        async def pay(interaction: Interaction,amount:int):
-            """Show the podium for most number of streaks"""
-            self.paid[interaction.user.id] = amount
-            raise ValueError("This is a simulated error.")
-            return
-            if interaction.user.id in self.debts:
-                if amount==None:
-                    self.debts[interaction.user.id] = 0
-                if amount > self.debts[interaction.user.id]:
-                    await interaction.response.send_message("wait you are paying more than the debpts, I can t accept that",ephemeral = True)
-                elif amount <= self.debts[interaction.user.id]:
-                    self.debts[interaction.user.id] -= amount
-
-    async def count_debts(self):
-        self.messages = pickle.load(open("db\\messages.p","rb"))
-        debts = {}
-        for message in self.messages.keys():
-            for user in self.messages[message].keys():
-                if not self.messages[message][user]:
-                    if user in debts:
-                        debts[user] += 5
-                    else:
-                        debts[user] = 5
-        for user in self.paid.keys():
-            if user in debts:
-                debts[user] -= self.paid[user]
-                if debts[user] < 0:
-                    await log__("Negative debpt",Level.CRITICAL)
-        pickle.dump(self.messages,open("db\\messages.p","wb"))
-    async def on_ready(self):
+    async def on_ready(self) -> None:
         self.channel = self.client.get_channel(1120432504629895300)
     async def is_admin(self,interaction: Interaction) -> bool:
         member = await interaction.guild.fetch_member(interaction.user.id)
         return member.guild_permissions.moderate_members
 
     @tasks.loop(time = times)
-    async def daily_message(self):
+    async def daily_message(self) -> None:
+        if (datetime.now().weekday() > 4):
+            return
         message:Message = await self.channel.send(
             "Hello, it's time to ~~have fun~~ work, have you already done everything there was to do today?\nIf you had"
             "n't any exercise, have understood the lecture?\nIf you hadn't any lecture, have you advanced in your group"
@@ -150,7 +121,7 @@ class Streak(BotFeature):
         pickle.dump(self.messages,open("db\\messages.p","wb"))
 
 
-    async def on_raw_reaction_add(self,payload: RawReactionActionEvent):
+    async def on_raw_reaction_add(self,payload: RawReactionActionEvent) -> None:
         if payload.member.bot:
             return
         self.messages = pickle.load(open("db\\messages.p","rb"))
@@ -164,7 +135,7 @@ class Streak(BotFeature):
         self.messages[payload.message_id][payload.member.id] = True
         pickle.dump(self.messages,open("db\\messages.p","wb"))
 
-    async def on_raw_reaction_remove(self,payload: RawReactionActionEvent):
+    async def on_raw_reaction_remove(self,payload: RawReactionActionEvent) -> None:
         self.messages = pickle.load(open("db\\messages.p","rb"))
         if payload.message_id not in self.messages.keys():
             await log__(

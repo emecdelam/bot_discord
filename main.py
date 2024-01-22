@@ -3,7 +3,7 @@ import logging
 from os import getenv
 from discord import Intents,RawReactionActionEvent
 from feature import BotFeature
-from commands import Ping,Summon,Search,Streak
+from commands import Ping,Summon,Search,Streak,Thread
 from logging_system import log__,Colors,Level
 from ex_reminder import Add,Done
 from client import MyClient
@@ -21,7 +21,7 @@ intents.presences = True
 intents.reactions = True
 client = MyClient(intents = intents)
 
-features: list[BotFeature] = [Ping(client),Summon(client),Search(client),Add(client),Done(client),Streak(client)]
+features: list[BotFeature] = [Ping(client),Summon(client),Search(client),Add(client),Done(client),Streak(client),Thread(client)]
 
 @client.event
 async def on_ready():
