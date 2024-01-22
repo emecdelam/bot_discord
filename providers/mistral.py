@@ -1,7 +1,6 @@
 import requests
 import os
 def ask_mistral(prompt, max_tokens, temperature=1):
-    print("api:", os.getenv("MISTRAL_API_KEY"))
     headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
