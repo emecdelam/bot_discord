@@ -18,6 +18,8 @@ def ask_mistral(prompt, max_tokens, temperature=1):
     }
 
     r = requests.post("https://api.mistral.ai/v1/chat/completions", headers=headers, json=json_data)
+    if (r.status_code != 200):
+        return "⛔ Error from Mistral API: \n"+r.text
     text = r.json()["choices"][0]["message"]["content"]
     return text
 
