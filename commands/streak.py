@@ -108,7 +108,7 @@ class Streak(BotFeature):
             return
 
         content = ask_mistral("""
-Generate ONLY ONE daily message asking users (there is not ony one user) if they did their daily work.
+Generate ONLY ONE daily message asking users (there is not only one user) if they did their daily work.
 Don't hesitate to call them with familiar nouns like "hey dumbass" (not this one but it's an example).
 Your answer must not be larger than 100 tokens. Be short !! (don't give me tokens number)
 
