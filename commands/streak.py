@@ -125,9 +125,6 @@ class Streak(BotFeature):
             return
         self.messages = pickle.load(open("db\\messages.p","rb"))
         if payload.message_id not in self.messages.keys():
-            await log__(
-                f"no message found (adding) in database :{payload.message_id} for messages : {self.messages.keys()}",
-                Level.ERROR)
             return
         if payload.member.id not in self.messages[payload.message_id].keys():
             await log__(f"member not found when adding a reaction to :{payload.message_id} for member {payload.member.name}",Level.WARNING)
@@ -137,9 +134,6 @@ class Streak(BotFeature):
     async def on_raw_reaction_remove(self,payload: RawReactionActionEvent) -> None:
         self.messages = pickle.load(open("db\\messages.p","rb"))
         if payload.message_id not in self.messages.keys():
-            await log__(
-                f"no message found (removing) in database :{payload.message_id} for messages : {self.messages.keys()}",
-                Level.ERROR)
             return
         if payload.member is None:
             payload.member = await self.client.fetch_user(payload.user_id)
