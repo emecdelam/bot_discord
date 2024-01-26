@@ -1,7 +1,7 @@
-from typing import Dict
+from typing import Dict,List
 import asyncpg
 from discord.ext import tasks
-from discord import Interaction,TextChannel,RawReactionActionEvent,Message,Member,Embed,Color,app_commands
+from discord import Interaction,TextChannel,RawReactionActionEvent,Message,Member,Embed,Color,app_commands,Thread
 from feature import BotFeature
 from datetime import time
 from datetime import timezone
@@ -20,7 +20,7 @@ class Streak(BotFeature):
     def __init__(self,client: MyClient):
         super().__init__(client)
         self.daily_message.add_exception_type(asyncpg.PostgresConnectionError)
-        self.channel = None
+        self.channel:TextChannel = None
         self.messages: Dict[Message.id,Dict[Member.id,bool]] = {}
         self.debts = {}
         self.paid = {}
@@ -29,14 +29,14 @@ class Streak(BotFeature):
             """Reset task loop for current streak"""
             if await self.is_admin(interaction):
                 self.channel = interaction.channel
-                await interaction.response.send_message("started streaks",ephemeral = True)
+                await interaction.response.send_message("started streaks, don t forget to add a channel",ephemeral = True)
                 await self.daily_message.start()
                 return
             await interaction.response.send_message("missing persmission",ephemeral = True)
 
         @client.tree.command()
         async def channel_streaks(interaction: Interaction,channel: TextChannel):
-            """Stops the task loop for current streaks"""
+            """Sets the streak channel"""
             if await self.is_admin(interaction):
                 self.channel = channel
                 await interaction.response.send_message("new channel done",ephemeral = True)
@@ -54,7 +54,7 @@ class Streak(BotFeature):
 
         @client.tree.command()
         async def reset_streaks(interaction: Interaction):
-            """Stops the task loop for current streaks"""
+            """[WARNING] Clears the database for streaks """
             if await self.is_admin(interaction):
                 pickle.dump(self.messages,open("db\\streak_backup.p","wb"))
                 self.messages = {}
@@ -107,18 +107,24 @@ class Streak(BotFeature):
 
     @tasks.loop(time = times)
     async def daily_message(self) -> None:
+
         if (datetime.now().weekday() > 4):
             return
+        threads:List[Thread] = self.channel.threads
+        for thread in threads:
+            if thread.name == "daily":
+                await thread.send()
+                break
 
-        content = ask_chat(random.choice(prompts))        
-        message:Message = await self.channel.send(content)
+    async def send_message(self,thread:Thread) :
+        content = ask_chat(random.choice(prompts))
+        message: Message = await thread.send(content)
         self.messages[message.id] = {}
         for member in self.channel.guild.members:
             if not member.bot:
                 self.messages[message.id][member.id] = False
         await message.add_reaction('✅')
         pickle.dump(self.messages,open("db\\messages.p","wb"))
-
 
     async def on_raw_reaction_add(self,payload: RawReactionActionEvent) -> None:
         if payload.member.bot:
@@ -127,7 +133,7 @@ class Streak(BotFeature):
         if payload.message_id not in self.messages.keys():
             return
         if payload.member.id not in self.messages[payload.message_id].keys():
-            await log__(f"member not found when adding a reaction to :{payload.message_id} for member {payload.member.name}",Level.WARNING)
+            return
         self.messages[payload.message_id][payload.member.id] = True
         pickle.dump(self.messages,open("db\\messages.p","wb"))
 
@@ -141,8 +147,7 @@ class Streak(BotFeature):
             await log__(f"Unable to fetch member for user ID: {payload.user_id}",Level.WARNING)
             return
         if payload.user_id not in self.messages[payload.message_id].keys():
-            await log__(f"member not found when removing a reaction to: {payload.message_id} for member {payload.member.name}",
-                        Level.WARNING)
+            return
 
         if payload.member.id not in self.messages[payload.message_id].keys():
             await log__(f"member not found when removing a reaction to :{payload.message_id} for member {payload.member.name}",Level.WARNING)
