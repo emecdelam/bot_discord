@@ -107,13 +107,15 @@ class Streak(BotFeature):
 
     @tasks.loop(time = times)
     async def daily_message(self) -> None:
-
+        async def true(msg:Message) -> bool:
+            return True
         if (datetime.now().weekday() > 4):
             return
         threads:List[Thread] = self.channel.threads
         for thread in threads:
             if thread.name == "daily":
-                await thread.send()
+                await thread.purge()
+                await self.send_message(thread)
                 break
 
     async def send_message(self,thread:Thread) :
