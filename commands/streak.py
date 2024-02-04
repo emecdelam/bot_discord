@@ -58,6 +58,7 @@ class Streak(BotFeature):
             if await self.is_admin(interaction):
                 pickle.dump(self.messages,open("db\\streak_backup.p","wb"))
                 self.messages = {}
+                pickle.dump(self.messages,open("db\\messages.p","wb"))
                 await interaction.response.send_message("resetted streaks",ephemeral = True)
                 return
             await interaction.response.send_message("missing persmission",ephemeral = True)
