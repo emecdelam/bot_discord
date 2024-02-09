@@ -25,6 +25,7 @@ async def switch_db(*args):
         if user_id in messages[msg_id].keys():
             messages[msg_id][user_id] = not messages[msg_id][user_id]
             pickle.dump(messages,open("db\\messages.p","rb"))
+            await log__("switch done successfull",Level.DEBUG,Colors.lightcyan)
         else:
             await log__("User not in db",Level.DEBUG,Colors.lightcyan)
     else:
