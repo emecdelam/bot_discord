@@ -16,9 +16,11 @@ async def print_db(*args):
     with open("admin/db.json","w") as file:
         json.dump(messages,file,indent = 4)
     await log__("Message writted in admin/db",Level.DEBUG,Colors.lightcyan)
-async def switch_db(msg_id,user_id,*args):
-    """Switch the state of a user in the messages db list"""
+async def switch_db(*args):
+    """Switch the state of a user in the messages db list,use msg_id then user_id"""
     messages = pickle.load(open("db\\messages.p","rb"))
+    msg_id = args[0]
+    user_id = args[1]
     if msg_id in messages.keys():
         if user_id in messages[msg_id].keys():
             messages[msg_id][user_id] = not messages[msg_id][user_id]
