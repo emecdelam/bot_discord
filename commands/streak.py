@@ -63,10 +63,11 @@ class Streak(BotFeature):
                 return
             await interaction.response.send_message("missing persmission",ephemeral = True)
         @client.tree.command()
-        async def streaks(interaction: Interaction, member:Member):
+        async def streaks(interaction: Interaction):
             """Show the user number of streaks"""
             self.messages = pickle.load(open("db\\messages.p","rb"))
             count = 0
+            member = interaction.user
             for message in self.messages.keys():
                 if member.id not in self.messages[message].keys():
                     continue
