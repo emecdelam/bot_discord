@@ -9,6 +9,5 @@ class BotFeature:
         pass
     async def on_raw_reaction_add(self,payload: RawReactionActionEvent):
         pass
-
     async def on_raw_reaction_remove(self,payload: RawReactionActionEvent):
         pass

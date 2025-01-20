@@ -1,5 +1,5 @@
 from typing import Optional,Dict,List,Union
-from googlesearch import search as gsearch
+from duckduckgo_search import DDGS
 from discord import Interaction,Embed,Color,ButtonStyle,ui,Message, app_commands
 from discord.ui import Button,View
 from feature import BotFeature
@@ -80,10 +80,11 @@ def google_search(query: str,num_results: int) -> Union[str,List[Dict[str,str]]]
     if num_results < 1:
         num_results = 1
     try:
-        results = gsearch(query,num_results = num_results,advanced = True)
+        results = DDGS().text(query, max_results=num_results)
+        print(results)
         returned: List[Dict[str,str]] = []
         for i,result in enumerate(results):
-            returned.append({"title":result.title,"desc":result.description,"url":result.url})
+            returned.append({"title":result['title'],"desc":result['body'],"url":result['href']})
         return returned
     except Exception as e:
         return f"An error occurred: {e}"
