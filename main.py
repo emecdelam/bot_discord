@@ -32,7 +32,7 @@ async def on_ready():
     await log__(f"Initializing classes",Level.INFO,Colors.lightblue)
     [await x.on_ready() for x in features]
     await log__(f"Logged in as {client.user}",Level.INFO,Colors.lightgreen)
-    await asyncio.gather(client.setup_hook(),command_handler(client))
+    await asyncio.gather(await client.setup_hook(),command_handler(client))
 
 
 @client.event
