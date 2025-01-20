@@ -61,13 +61,13 @@ async def search__(interaction: Interaction,query: str,num_results: Optional[int
         description = '...'
     )
     await interaction.response.send_message(embed = embed)
-    results: List[Dict[str,str]] | str = google_search(query,num_results = num_results)
+    results: List[Dict[str,str]] | str = duck_search(query,num_results = num_results)
     sent = await interaction.original_response()
     if type(results) == str:
         await sent.edit(content = f"It didn't go as planned, the error is :\n{results}")
         return
 
-    buttons: Buttons = Buttons(list(results),sent,embed)
+    buttons: Buttons = Buttons(list(results),sent,embed, timeout = 120)
     buttons.previous_button.disabled = True
     if len(results) < 2:
         buttons.next_button.disabled =True
@@ -76,7 +76,7 @@ async def search__(interaction: Interaction,query: str,num_results: Optional[int
             name = "Link",value = results[0]["url"]),view = buttons)
 
 
-def google_search(query: str,num_results: int) -> Union[str,List[Dict[str,str]]]:
+def duck_search(query: str,num_results: int) -> Union[str,List[Dict[str,str]]]:
     if num_results < 1:
         num_results = 1
     try:
