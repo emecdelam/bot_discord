@@ -7,6 +7,10 @@ from feature import BotFeature
 from commands import Ping,Summon,Search,Thread
 from logging_system import log__,Colors,Level
 from client import MyClient
+import tracemalloc
+
+
+tracemalloc.start()
 
 load_dotenv()
 logger = logging.getLogger()
