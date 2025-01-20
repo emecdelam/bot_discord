@@ -21,26 +21,11 @@ async def ping__(interaction: Interaction) -> None:
     message: InteractionMessage = await interaction.original_response()
     end_time: float = time.time()
     response_time: float = (end_time - start_time) * 1000
-    button = Button(
-        label="Delete",
-        style=ButtonStyle.red,
-        emoji='\U0001F4A5',
-        custom_id="delete_button"
-    )
-
-    async def delete_message(interaction, button) :
-        if button.custom_id == "delete_button" :
-            await interaction.message.delete()
-
-    button.callback = delete_message
-
-    view = View(timeout=120).add_item(button)
 
     await message.edit(
         embed=Embed(
             color=Color.green(),
             title="**Response time**",
             description=f"Responded in:\n\n{response_time:.4f} ms\n\n{response_time / 1000:.4f} s\n\n{response_time / 60000:.4f} m",
-        ),
-        view=view
+        )
     )
