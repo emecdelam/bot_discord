@@ -1,5 +1,4 @@
-from discord import Interaction,Embed,Color,ButtonStyle,InteractionMessage
-from discord.ui import Button,View
+from discord import Interaction,Embed,Color,InteractionMessage
 from feature import BotFeature
 import time
 

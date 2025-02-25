@@ -1,14 +1,16 @@
 from dotenv import load_dotenv
 import asyncio
 import logging
+from dotenv import load_dotenv
 from os import getenv
 from discord import Intents,RawReactionActionEvent
 from feature import BotFeature
-from commands import Ping,Summon,Search,Thread, Ask
+from commands import *
 from logging_system import log__,Colors,Level
 from client import MyClient
 import tracemalloc
 
+load_dotenv()
 
 tracemalloc.start()
 
@@ -25,7 +27,7 @@ intents.presences = True
 intents.reactions = True
 client = MyClient(intents = intents)
 
-features: list[BotFeature] = [Ping(client),Summon(client),Search(client),Thread(client), Ask(client)]
+features: list[BotFeature] = [Ping(client),Summon(client),Search(client),Thread(client), Ask(client), Dodo(client)]
 
 @client.event
 async def on_ready():
@@ -36,7 +38,7 @@ async def on_ready():
     await log__(f"Initializing classes",Level.INFO,Colors.lightblue)
     [await x.on_ready() for x in features]
     await log__(f"Logged in as {client.user}",Level.INFO,Colors.lightgreen)
-    await asyncio.gather(await client.setup_hook(),command_handler(client))
+    await asyncio.gather(await client.setup_hook())
 
 
 @client.event
