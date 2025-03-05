@@ -1,4 +1,4 @@
-from discord import Interaction,app_commands,TextChannel
+from discord import Interaction,app_commands,TextChannel, ChannelType
 from discord.app_commands import Choice
 from typing import Optional
 from feature import BotFeature
@@ -41,6 +41,5 @@ async def thread__(interaction: Interaction,channel: TextChannel,name:str,month:
         res +=" " + year
     if number is not None:
         res = f"[{number}] - "+res
-    await channel.create_thread(name = res)
+    await channel.create_thread(name = res, type=ChannelType.public_thread)
     await interaction.response.send_message("thread created",ephemeral = True)
-    await channel.send("New thread created : "+res)
