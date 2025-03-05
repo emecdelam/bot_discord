@@ -1,7 +1,6 @@
 from dotenv import load_dotenv
 import asyncio
 import logging
-from dotenv import load_dotenv
 from os import getenv
 from discord import Intents,RawReactionActionEvent
 from feature import BotFeature
@@ -9,12 +8,13 @@ from commands import *
 from logging_system import log__,Colors,Level
 from client import MyClient
 import tracemalloc
+from pathlib import Path
 
-load_dotenv()
 
+load_dotenv(dotenv_path=Path('.env'))
 tracemalloc.start()
 
-load_dotenv()
+
 logger = logging.getLogger()
 logger.setLevel(logging.ERROR)
 file_handler = logging.FileHandler('error.log')

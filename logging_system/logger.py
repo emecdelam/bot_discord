@@ -14,4 +14,4 @@ async def log(message_content: str,level: str,text_color: Optional[Colors] = "")
         print(
             f'{text_color}[{str(datetime.now().strftime("%Y-%m-%d %H:%M:%S")).ljust(19)}] [{str(level).ljust(8)}] {message_content}{Colors.reset}')
     else:
-        print(f'[{str(datetime.now()).ljust(19)}] [{str(level).ljust(8)}] {message_content}{Colors.reset}')
+        print(f'[{str(datetime.now().strftime("%Y-%m-%d %H:%M:%S")).ljust(19)}] [{str(level).ljust(8)}] {message_content}{Colors.reset}')

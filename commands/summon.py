@@ -16,6 +16,6 @@ class Summon(BotFeature):
 
 async def summon__(interaction: Interaction, user: User) -> None:
     with open("constants/summoning_gifs.txt","r") as file:
-        data: List[str] = file.readlines()
+        data: List[str] = file.read().splitlines()
     await interaction.response.send_message(choice(data))
     await interaction.followup.send(f"<@{user.id}>")
