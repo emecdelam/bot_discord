@@ -2,13 +2,14 @@ from discord import Interaction,Embed,Color,ButtonStyle,InteractionMessage
 from discord.ui import Button,View
 from feature import BotFeature
 import time
-
+from logging_system import log__, Level
 class Ping(BotFeature):
     def __init__(self, client):
         super().__init__(client)
         @client.tree.command()
         async def ping(interaction: Interaction):
             """Gives you the response time"""
+            await log__(f"Ping called by : {interaction.user.name}", Level.INFO)
             await ping__(interaction)
 async def ping__(interaction: Interaction) -> None:
     embed: Embed = Embed(

@@ -57,5 +57,4 @@ async def on_raw_reaction_remove(payload: RawReactionActionEvent):
 
 file_handler = logging.FileHandler('error.log')
 file_handler.setLevel(logging.ERROR)
-
 client.run(getenv('DISCORD_BOT_TOKEN'), log_handler=file_handler)

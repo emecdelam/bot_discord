@@ -1,6 +1,7 @@
 from discord import Interaction,app_commands,TextChannel, ChannelType
 from discord.app_commands import Choice
 from typing import Optional
+from logging_system import log__, Level
 from feature import BotFeature
 class Thread(BotFeature):
     def __init__(self, client):
@@ -27,11 +28,10 @@ class Thread(BotFeature):
             Choice(name = "nov",value = "nov"),
             Choice(name = "dec",value = "dec")
         ])
-        async def thread(interaction: Interaction,channel: TextChannel,name:str,month:Optional[Choice[str]]=None,year:Optional[str]=None,number:Optional[int]=None):
+        async def thread(interaction: Interaction,channel: TextChannel,name:str,month:Optional[str]=None,year:Optional[str]=None,number:Optional[int]=None):
             """Creates a thread"""
-            if month is not None:
-                month = month.name
-            await thread__(interaction,channel,name,month,year,number)
+            await log__(f"Thread creator command called with name : {name} in {channel.name}", Level.INFO)
+            await thread__(interaction, channel, name, month, year, number)
 
 async def thread__(interaction: Interaction,channel: TextChannel,name:str,month:Optional[str]=None,year:Optional[str]=None,number:Optional[int]=None):
     res = name

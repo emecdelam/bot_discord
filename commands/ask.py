@@ -47,4 +47,4 @@ async def ask__(interaction: Interaction, model:str, question: str, client) -> N
             await interaction.channel.send(chunk)
     except Exception as e:
         await interaction.channel.send(f"`An error occurred while contacting the DeepSeek API. : {e}`")
-        await log__(f"Deepseek error : {e}", Level.INFO)
+        await log__(f"Deepseek error : {e}", Level.ERROR)

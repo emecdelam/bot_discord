@@ -3,6 +3,7 @@ from duckduckgo_search import DDGS
 from discord import Interaction,Embed,Color,ButtonStyle,ui,Message, app_commands
 from discord.ui import Button,View
 from feature import BotFeature
+from logging_system import log__, Level
 class Search(BotFeature):
     def __init__(self, client):
         super().__init__(client)
@@ -13,6 +14,7 @@ class Search(BotFeature):
         )
         async def search(interaction: Interaction,content: str,num_results: Optional[int] = 3):
             """Returns you the searches for a result, can't be less than 1"""
+            await log__(f"Search called by : {interaction.user.name} for {content}", Level.INFO)
             await search__(interaction,content,num_results - 1)
 
 class Buttons(View):
@@ -64,7 +66,7 @@ async def search__(interaction: Interaction,query: str,num_results: Optional[int
     results: List[Dict[str,str]] | str = duck_search(query,num_results = num_results)
     sent = await interaction.original_response()
     if type(results) == str:
-        await sent.edit(content = f"It didn't go as planned, the error is :\n{results}")
+        await sent.edit(content = f"`{results}`")
         return
 
     buttons: Buttons = Buttons(list(results),sent,embed, timeout = 120)
@@ -81,10 +83,10 @@ def duck_search(query: str,num_results: int) -> Union[str,List[Dict[str,str]]]:
         num_results = 1
     try:
         results = DDGS().text(query, max_results=num_results)
-        print(results)
         returned: List[Dict[str,str]] = []
         for i,result in enumerate(results):
             returned.append({"title":result['title'],"desc":result['body'],"url":result['href']})
         return returned
     except Exception as e:
-        return f"An error occurred: {e}"
+        log__(f"Error occured when searching with duck engine with query : {query} and {num_results} results asked", Level.ERROR)
+        return f"Duckduckgo error: {e}"

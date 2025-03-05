@@ -2,6 +2,7 @@ from discord import Interaction, User, app_commands
 from random import choice
 from typing import List
 from feature import BotFeature
+from logging_system import log__, Level
 class Summon(BotFeature):
     def __init__(self, client):
         super().__init__(client)
@@ -12,6 +13,7 @@ class Summon(BotFeature):
         )
         async def summon(interaction: Interaction,user: User):
             """Summons a person"""
+            await log__(f"Summon called by : {interaction.user.name} for {user.name}", Level.INFO)
             await summon__(interaction,user)
 
 async def summon__(interaction: Interaction, user: User) -> None:
