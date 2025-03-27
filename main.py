@@ -18,6 +18,7 @@ tracemalloc.start()
 logger = logging.getLogger()
 logger.setLevel(logging.ERROR)
 file_handler = logging.FileHandler('error.log')
+file_handler.setLevel(logging.ERROR)
 logger.addHandler(file_handler)
 
 intents = Intents.default()
@@ -55,6 +56,6 @@ async def on_raw_reaction_remove(payload: RawReactionActionEvent):
 
 
 
-file_handler = logging.FileHandler('error.log')
-file_handler.setLevel(logging.ERROR)
+
+
 client.run(getenv('DISCORD_BOT_TOKEN'), log_handler=file_handler)
